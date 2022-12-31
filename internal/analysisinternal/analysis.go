@@ -381,6 +381,16 @@ func FindMatchingIdents(typs []types.Type, node ast.Node, pos token.Pos, info *t
 			if equivalentTypes(obj.Type(), typ) {
 				matches[typ] = append(matches[typ], ast.NewIdent(ident.Name))
 			}
+
+			//
+			struc, ok := obj.Type().Underlying().(*types.Struct)
+			if ok {
+				for i := 0; i < struc.NumFields(); i++ {
+					if equivalentTypes(struc.Field(i).Type(), typ) {
+						matches[struc.Field(i).Type()] = append(matches[struc.Field(i).Type()], ast.NewIdent(ident.Name+"."+struc.Field(i).Name()))
+					}
+				}
+			}
 		}
 		return true
 	})
